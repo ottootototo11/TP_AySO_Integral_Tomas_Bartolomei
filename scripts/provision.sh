@@ -20,28 +20,24 @@ elif command -v dnf &>/dev/null; then
 fi
 
 echo "=== Configurando LVM ==="
-pvcreate /dev/sdb /dev/sdc /dev/sdd 2>/dev/null || true
-
-vgcreate vg_datos /dev/sdb /dev/sdc 2>/dev/null || true
-vgcreate vg_temp  /dev/sdd          2>/dev/null || true
-
-lvcreate -L 10M  -n lv_docker    vg_datos 2>/dev/null || true
-lvcreate -L 2.5G -n lv_workareas vg_datos 2>/dev/null || true
-lvcreate -L 2.5G -n lv_swap      vg_temp  2>/dev/null || true
-
-mkfs.ext4 -F /dev/vg_datos/lv_docker    2>/dev/null || true
-mkfs.ext4 -F /dev/vg_datos/lv_workareas 2>/dev/null || true
-mkswap       /dev/vg_temp/lv_swap        2>/dev/null || true
-
-mkdir -p /var/lib/docker /work
-mount /dev/vg_datos/lv_docker    /var/lib/docker
-mount /dev/vg_datos/lv_workareas /work
-swapon /dev/vg_temp/lv_swap 2>/dev/null || true
-
-grep -q "lv_docker"    /etc/fstab || echo "/dev/vg_datos/lv_docker    /var/lib/docker ext4 defaults 0 2" >> /etc/fstab
-grep -q "lv_workareas" /etc/fstab || echo "/dev/vg_datos/lv_workareas /work           ext4 defaults 0 2" >> /etc/fstab
-grep -q "lv_swap"      /etc/fstab || echo "/dev/vg_temp/lv_swap       none            swap sw       0 0" >> /etc/fstab
-
-systemctl restart docker 2>/dev/null || true
-
-echo "=== Provision completo ==="
+if [ -b /dev/sdb ] && [ -b /dev/sdc ] && [ -b /dev/sdd ]; then
+    pvcreate /dev/sdb /dev/sdc /dev/sdd 2>/dev/null || true
+    vgcreate vg_datos /dev/sdb /dev/sdc 2>/dev/null || true
+    vgcreate vg_temp  /dev/sdd          2>/dev/null || true
+    lvcreate -L 10M  -n lv_docker    vg_datos 2>/dev/null || true
+    lvcreate -L 2.5G -n lv_workareas vg_datos 2>/dev/null || true
+    lvcreate -L 2.5G -n lv_swap      vg_temp  2>/dev/null || true
+    mkfs.ext4 -F /dev/vg_datos/lv_docker    2>/dev/null || true
+    mkfs.ext4 -F /dev/vg_datos/lv_workareas 2>/dev/null || true
+    mkswap       /dev/vg_temp/lv_swap        2>/dev/null || true
+    mkdir -p /var/lib/docker /work
+    mount /dev/vg_datos/lv_docker    /var/lib/docker
+    mount /dev/vg_datos/lv_workareas /work
+    swapon /dev/vg_temp/lv_swap 2>/dev/null || true
+    grep -q "lv_docker"    /etc/fstab || echo "/dev/vg_datos/lv_docker    /var/lib/docker ext4 defaults 0 2" >> /etc/fstab
+    grep -q "lv_workareas" /etc/fstab || echo "/dev/vg_datos/lv_workareas /work           ext4 defaults 0 2" >> /etc/fstab
+    grep -q "lv_swap"      /etc/fstab || echo "/dev/vg_temp/lv_swap       none            swap sw       0 0" >> /etc/fstab
+    echo "=== LVM configurado ==="
+else
+    echo "=== Discos extra no encontrados, saltando LVM ==="
+fi
