@@ -1,0 +1,7 @@
+---
+- name: Permitir sudo sin clave al grupo TOMASBARTOLOMEI
+  copy:
+    dest: /etc/sudoers.d/TOMASBARTOLOMEI
+    content: "%TOMASBARTOLOMEI ALL=(ALL) NOPASSWD:ALL\n"
+    validate: "visudo -cf %s"
+    mode: '0440'

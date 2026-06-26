@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: yes
+  roles:
+    - TP_INI
+    - Alta_Usuarios_TOMASBARTOLOMEI
+    - Sudoers_TOMASBARTOLOMEI
+    - Instala-tools_TOMASBARTOLOMEI

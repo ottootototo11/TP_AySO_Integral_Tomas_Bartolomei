@@ -1,0 +1,21 @@
+---
+- name: Crear grupos principales
+  group:
+    name: "{{ item.grupo }}"
+    state: present
+  loop: "{{ integrantes }}"
+
+- name: Crear grupo secundario del equipo
+  group:
+    name: "{{ nombre_grupo }}"
+    state: present
+
+- name: Crear usuarios
+  user:
+    name: "{{ item.usuario }}"
+    group: "{{ item.grupo }}"
+    groups: "{{ nombre_grupo }}"
+    password: "{{ 'vagrant' | password_hash('sha512') }}"
+    shell: /bin/bash
+    create_home: yes
+  loop: "{{ integrantes }}"
