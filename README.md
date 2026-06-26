@@ -1,1 +1,1 @@
-Nombre y Apellido: Tomas Bartolomei - Legajo: 313
+Nombre y Apellido: Tomas Bartolomei
