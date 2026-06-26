@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  web:
+    image: ottootototo11/tp-div_313_grupo_tomasbartolomei:latest
+    ports:
+      - "8081:80"
+    volumes:
+      - ./web/file:/usr/share/nginx/html/file
